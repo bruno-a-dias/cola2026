@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cola 2026 — não esqueça o número do seu candidato</title>
+  <meta name="description" content="App gratuito e sem viés político para guardar os números dos candidatos que você já escolheu para as Eleições 2026, com dados oficiais do TSE." />
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #0b1d3a;
+      --bg-card: #132a52;
+      --bg-card-2: #0e2244;
+      --border: #1e3560;
+      --blue: #3467e0;
+      --yellow: #ffd75e;
+      --text: #ffffff;
+      --muted: #a9b8d4;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 20px 64px;
+    }
+    header {
+      text-align: center;
+      padding: 56px 20px 32px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+    }
+    h1 {
+      font-size: 40px;
+      margin: 0 0 12px;
+      line-height: 1.1;
+    }
+    h1 span { color: var(--yellow); }
+    .subtitulo {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.5;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .cta {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+    .botao {
+      display: inline-block;
+      text-decoration: none;
+      padding: 14px 26px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .botao.primario { background: var(--blue); color: #fff; }
+    .botao.secundario { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
+
+    .cartao {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      margin-top: 24px;
+    }
+    .recursos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    @media (max-width: 520px) {
+      .recursos { grid-template-columns: 1fr; }
+      h1 { font-size: 32px; }
+    }
+    .recurso {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .recurso h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      color: var(--yellow);
+    }
+    .recurso p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .qr-secao {
+      text-align: center;
+    }
+    .qr-secao h2 {
+      font-size: 22px;
+      margin: 0 0 6px;
+    }
+    .qr-secao p {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 20px;
+    }
+    #qrcode {
+      display: inline-block;
+      padding: 16px;
+      background: #fff;
+      border-radius: 16px;
+      line-height: 0;
+    }
+    .versao {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .aviso {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 40px;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="badge">ELEIÇÕES 2026 · SEM VIÉS POLÍTICO</span>
+      <h1>Não esqueça o número<br />do seu <span>candidato</span>.</h1>
+      <p class="subtitulo">
+        O Cola 2026 é a sua cola pessoal para o dia da votação. Guarde os
+        números que você já escolheu, com foto e dados oficiais do TSE — tudo
+        no seu celular, offline.
+      </p>
+      <div class="cta">
+        <a class="botao primario" id="link-apk" href="#baixar">Baixar APK (Android)</a>
+        <a class="botao secundario" href="https://github.com/bruno-a-dias/cola2026">Ver código no GitHub</a>
+      </div>
+    </header>
+
+    <section class="recursos">
+      <div class="recurso">
+        <h3>Dados oficiais do TSE</h3>
+        <p>Busca por número ou nome usando o dataset oficial de candidatos das Eleições 2026.</p>
+      </div>
+      <div class="recurso">
+        <h3>Foto do candidato</h3>
+        <p>A foto oficial aparece junto do número, para confirmar que é quem você escolheu.</p>
+      </div>
+      <div class="recurso">
+        <h3>100% offline</h3>
+        <p>Sua lista fica salva só no seu aparelho. Nada é enviado para servidores.</p>
+      </div>
+      <div class="recurso">
+        <h3>Imprimir ou compartilhar</h3>
+        <p>Gere sua folha de cola em PDF, pronta para imprimir ou mandar pro WhatsApp.</p>
+      </div>
+    </section>
+
+    <section class="cartao qr-secao" id="baixar">
+      <h2>Escaneie para baixar</h2>
+      <p>Aponte a câmera do celular para instalar o APK direto.</p>
+      <div id="qrcode"></div>
+      <div class="versao">versão <strong id="versao-texto">1.0.0</strong> · Android</div>
+    </section>
+
+    <p class="aviso">
+      O Cola 2026 é um projeto independente, sem qualquer vínculo com partidos,
+      candidatos ou coligações. Sua única função é ajudar eleitores a lembrar
+      escolhas que eles mesmos já fizeram.
+    </p>
+
+    <footer>
+      <p>
+        Dados: <a href="https://dadosabertos.tse.jus.br/dataset/candidatos-2026">Portal de Dados Abertos do TSE</a>
+        · <a href="https://github.com/bruno-a-dias/cola2026/blob/main/CHANGELOG.md">Histórico de versões</a>
+      </p>
+    </footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    var APK_URL = "https://expo.dev/artifacts/eas/4p8R5ujEBz0-l1cvgZiCC2VsJp5MZvTtJkQlzWLgqdM.apk";
+    document.getElementById("link-apk").href = APK_URL;
+    new QRCode(document.getElementById("qrcode"), {
+      text: APK_URL,
+      width: 200,
+      height: 200,
+      colorDark: "#0b1d3a",
+      colorLight: "#ffffff",
+    });
+  </script>
+</body>
+</html>

@@ -18,6 +18,12 @@
     },
     "web": {
       "bundler": "metro"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b751abcf-dc03-4e06-83a0-e8ce194edafc"
+      }
+    },
+    "owner": "badmask"
   }
 }
