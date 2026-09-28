@@ -8,7 +8,7 @@ político** que guarda os candidatos que _você já escolheu_ — com número, f
 oficial e partido, direto dos dados abertos do TSE — prontos pra consultar (ou
 imprimir!) no dia da eleição.
 
-### [Baixar o APK (Android) — v1.0.0](https://expo.dev/artifacts/eas/4p8R5ujEBz0-l1cvgZiCC2VsJp5MZvTtJkQlzWLgqdM.apk)
+### [Baixar o APK (Android) — v1.0.1](https://expo.dev/artifacts/eas/1-0jF0mFECWvf1aMdZzM5pSDArBn8ma9zWkiOLx1yTk.apk)
 
 ---
 

@@ -2,7 +2,6 @@ import { useMemo, useState, useEffect } from "react";
 import {
   ActivityIndicator,
   Image,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,6 +9,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import dadosJson from "./assets/candidatos.json";
 import {
@@ -31,6 +34,15 @@ import { compartilharCola, imprimirCola } from "./sheet";
 const dados = dadosJson as unknown as { geradoEm: string; porUf: Record<string, CandidatoTSE[]> };
 
 export default function App() {
+  return (
+    <SafeAreaProvider>
+      <Conteudo />
+    </SafeAreaProvider>
+  );
+}
+
+function Conteudo() {
+  const insets = useSafeAreaInsets();
   const [candidatos, setCandidatos] = useState<Candidato[]>([]);
   const [cargo, setCargo] = useState<Cargo>("PRESIDENTE");
   const [uf, setUf] = useState<Uf>("SP");
@@ -106,7 +118,7 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
       <StatusBar style="light" />
       <Text style={styles.titulo}>Minha Cola 2026</Text>
       <Text style={styles.subtitulo}>
@@ -170,7 +182,7 @@ export default function App() {
         )}
       </ScrollView>
 
-      <View style={styles.form}>
+      <View style={[styles.form, { paddingBottom: insets.bottom + 20 }]}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cargos}>
           {CARGOS.map((c) => (
             <TouchableOpacity
@@ -268,12 +280,12 @@ export default function App() {
           <Text style={styles.botaoAdicionarTexto}>Adicionar</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0b1d3a", paddingTop: 16 },
+  container: { flex: 1, backgroundColor: "#0b1d3a" },
   titulo: {
     fontSize: 24,
     fontWeight: "700",
