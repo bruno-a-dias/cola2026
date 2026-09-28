@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Cola 2026",
+    "slug": "cola2026",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#0b1d3a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cola2026.app"
+    },
+    "android": {
+      "package": "com.cola2026.app",
+      "versionCode": 1
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
