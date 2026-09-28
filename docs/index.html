@@ -77,13 +77,6 @@
     .botao.primario { background: var(--blue); color: #fff; }
     .botao.secundario { background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
 
-    .cartao {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px;
-      margin-top: 24px;
-    }
     .recursos {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -112,30 +105,6 @@
       line-height: 1.5;
     }
 
-    .qr-secao {
-      text-align: center;
-    }
-    .qr-secao h2 {
-      font-size: 22px;
-      margin: 0 0 6px;
-    }
-    .qr-secao p {
-      color: var(--muted);
-      font-size: 14px;
-      margin: 0 0 20px;
-    }
-    #qrcode {
-      display: inline-block;
-      padding: 16px;
-      background: #fff;
-      border-radius: 16px;
-      line-height: 0;
-    }
-    .versao {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: 13px;
-    }
     .aviso {
       text-align: center;
       color: var(--muted);
@@ -163,7 +132,7 @@
         no seu celular, offline.
       </p>
       <div class="cta">
-        <a class="botao primario" id="link-apk" href="#baixar">Baixar APK (Android)</a>
+        <a class="botao primario" href="https://expo.dev/artifacts/eas/4p8R5ujEBz0-l1cvgZiCC2VsJp5MZvTtJkQlzWLgqdM.apk">Baixar APK (Android) — v1.0.0</a>
         <a class="botao secundario" href="https://github.com/bruno-a-dias/cola2026">Ver código no GitHub</a>
       </div>
     </header>
@@ -187,13 +156,6 @@
       </div>
     </section>
 
-    <section class="cartao qr-secao" id="baixar">
-      <h2>Escaneie para baixar</h2>
-      <p>Aponte a câmera do celular para instalar o APK direto.</p>
-      <div id="qrcode"></div>
-      <div class="versao">versão <strong id="versao-texto">1.0.0</strong> · Android</div>
-    </section>
-
     <p class="aviso">
       O Cola 2026 é um projeto independente, sem qualquer vínculo com partidos,
       candidatos ou coligações. Sua única função é ajudar eleitores a lembrar
@@ -207,18 +169,5 @@
       </p>
     </footer>
   </div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script>
-    var APK_URL = "https://expo.dev/artifacts/eas/4p8R5ujEBz0-l1cvgZiCC2VsJp5MZvTtJkQlzWLgqdM.apk";
-    document.getElementById("link-apk").href = APK_URL;
-    new QRCode(document.getElementById("qrcode"), {
-      text: APK_URL,
-      width: 200,
-      height: 200,
-      colorDark: "#0b1d3a",
-      colorLight: "#ffffff",
-    });
-  </script>
 </body>
 </html>

@@ -10,9 +10,6 @@ imprimir!) no dia da eleição.
 
 ### [Baixar o APK (Android) — v1.0.0](https://expo.dev/artifacts/eas/4p8R5ujEBz0-l1cvgZiCC2VsJp5MZvTtJkQlzWLgqdM.apk)
 
-Ou acesse o site e escaneie o QR Code pelo celular:
-**[cola2026-bruno-a-dias-projects.vercel.app](https://cola2026-bruno-a-dias-projects.vercel.app)**
-
 ---
 
 ## Por que usar
