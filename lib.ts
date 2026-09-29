@@ -96,12 +96,14 @@ export function filtrarCandidatos(
 ): CandidatoTSE[] {
   const numero = filtros.numero?.trim() ?? "";
   const nome = filtros.nome?.trim().toUpperCase() ?? "";
-  return candidatosDoCargo(porUf, cargo, uf).filter(
-    (c) =>
-      (!numero || c.numero.startsWith(numero)) &&
-      (!nome || c.nomeUrna.toUpperCase().includes(nome)) &&
-      (!filtros.partido || c.partido === filtros.partido)
-  );
+  return candidatosDoCargo(porUf, cargo, uf)
+    .filter(
+      (c) =>
+        (!numero || c.numero.startsWith(numero)) &&
+        (!nome || c.nomeUrna.toUpperCase().includes(nome)) &&
+        (!filtros.partido || c.partido === filtros.partido)
+    )
+    .sort((a, b) => Number(a.numero) - Number(b.numero));
 }
 
 export function partidosDisponiveis(

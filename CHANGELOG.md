@@ -4,6 +4,13 @@ Versionamento: `MAJOR.MINOR.PATCH`, começando em `1.0.0`. Cada novo APK gerado
 incrementa o PATCH (1.0.0 → 1.0.1 → 1.0.2 ...). A versão vive em `app.json`
 (`expo.version` + `expo.android.versionCode`, que também sobe a cada build).
 
+## 1.0.3 — 2026-09-29
+
+- A lista de candidatos (geral ou filtrada) agora sempre aparece em ordem
+  numérica crescente. Antes seguia a ordem bruta do arquivo do TSE, que
+  agrupa por partido/coligação e dava a impressão de favorecer alguns
+  partidos
+
 ## 1.0.2 — 2026-09-28
 
 - Filtros dinâmicos combináveis: partido (lista de chips), número (prefixo)
