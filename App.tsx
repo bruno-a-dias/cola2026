@@ -1,8 +1,8 @@
 import { useMemo, useState, useEffect } from "react";
 import {
   ActivityIndicator,
+  FlatList,
   Image,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -13,18 +13,20 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 import dadosJson from "./assets/candidatos.json";
 import {
-  buscarCandidatos,
   CandidatoTSE,
   capitalizar,
   CARGOS,
   Cargo,
   Candidato,
-  DIGITOS_POR_CARGO,
+  corDeFundo,
+  filtrarCandidatos,
   fotoUrl,
   ordenarPorCargo,
+  partidosDisponiveis,
   UFS,
   Uf,
 } from "./lib";
@@ -32,6 +34,7 @@ import { carregarCandidatos, salvarCandidatos } from "./storage";
 import { compartilharCola, imprimirCola } from "./sheet";
 
 const dados = dadosJson as unknown as { geradoEm: string; porUf: Record<string, CandidatoTSE[]> };
+const FUNDO_PADRAO = ["#0b1d3a", "#0b1d3a"];
 
 export default function App() {
   return (
@@ -46,11 +49,9 @@ function Conteudo() {
   const [candidatos, setCandidatos] = useState<Candidato[]>([]);
   const [cargo, setCargo] = useState<Cargo>("PRESIDENTE");
   const [uf, setUf] = useState<Uf>("SP");
-  const [termo, setTermo] = useState("");
-  const [nome, setNome] = useState("");
-  const [numero, setNumero] = useState("");
-  const [partido, setPartido] = useState("");
-  const [sqCandidato, setSqCandidato] = useState<string | undefined>();
+  const [filtroPartido, setFiltroPartido] = useState("");
+  const [filtroNumero, setFiltroNumero] = useState("");
+  const [filtroNome, setFiltroNome] = useState("");
   const [enviando, setEnviando] = useState<"imprimir" | "compartilhar" | null>(null);
 
   useEffect(() => {
@@ -59,38 +60,44 @@ function Conteudo() {
 
   const ufAtual = cargo === "PRESIDENTE" ? "BR" : uf;
 
-  const sugestoes = useMemo(
-    () => buscarCandidatos(dados.porUf, cargo, ufAtual, termo),
-    [cargo, ufAtual, termo]
-  );
-
-  function selecionar(c: CandidatoTSE) {
-    setNome(capitalizar(c.nomeUrna));
-    setNumero(c.numero);
-    setPartido(c.partido);
-    setSqCandidato(c.sqCandidato);
-    setTermo("");
+  function limparFiltros() {
+    setFiltroPartido("");
+    setFiltroNumero("");
+    setFiltroNome("");
   }
 
-  function adicionar() {
-    if (!nome.trim() || !numero.trim()) return;
+  const partidos = useMemo(
+    () => partidosDisponiveis(dados.porUf, cargo, ufAtual),
+    [cargo, ufAtual]
+  );
+
+  const resultados = useMemo(
+    () =>
+      filtrarCandidatos(dados.porUf, cargo, ufAtual, {
+        partido: filtroPartido || undefined,
+        numero: filtroNumero,
+        nome: filtroNome,
+      }),
+    [cargo, ufAtual, filtroPartido, filtroNumero, filtroNome]
+  );
+
+  const corFundo = filtroPartido ? corDeFundo(filtroPartido) : [];
+  const fundo = corFundo.length ? corFundo : FUNDO_PADRAO;
+
+  function adicionar(c: CandidatoTSE) {
     const novo: Candidato = {
       id: String(Date.now()),
       cargo,
-      nome: nome.trim(),
-      numero: numero.trim(),
-      partido: partido.trim(),
+      nome: capitalizar(c.nomeUrna),
+      numero: c.numero,
+      partido: c.partido,
       uf: ufAtual,
-      sqCandidato,
+      sqCandidato: c.sqCandidato,
     };
-    const atualizada = ordenarPorCargo([...candidatos, novo]);
+    // só faz sentido um candidato escolhido por cargo: troca o anterior
+    const atualizada = ordenarPorCargo([...candidatos.filter((x) => x.cargo !== cargo), novo]);
     setCandidatos(atualizada);
     salvarCandidatos(atualizada);
-    setNome("");
-    setNumero("");
-    setPartido("");
-    setSqCandidato(undefined);
-    setTermo("");
   }
 
   function remover(id: string) {
@@ -118,174 +125,164 @@ function Conteudo() {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+    <LinearGradient
+      colors={fundo as [string, string]}
+      style={[styles.container, { paddingTop: insets.top + 20 }]}
+    >
       <StatusBar style="light" />
       <Text style={styles.titulo}>Minha Cola 2026</Text>
       <Text style={styles.subtitulo}>
-        Busque pelo número ou nome oficial (dados do TSE) e monte sua cola
-        antes de votar.
+        Filtre por partido, número ou nome oficial (dados do TSE) e monte sua
+        cola antes de votar.
       </Text>
 
-      <ScrollView contentContainerStyle={styles.lista}>
-        {candidatos.length === 0 && (
-          <Text style={styles.vazio}>Nenhum candidato salvo ainda.</Text>
-        )}
-        {candidatos.map((c) => (
-          <View key={c.id} style={styles.item}>
-            {c.sqCandidato ? (
-              <Image
-                source={{ uri: fotoUrl(c.uf, c.sqCandidato) }}
-                style={styles.foto}
-              />
-            ) : (
-              <View style={styles.fotoVazia} />
-            )}
-            <View style={styles.itemInfo}>
-              <Text style={styles.itemCargo}>{capitalizar(c.cargo)}</Text>
-              <Text style={styles.itemNome}>
-                {c.nome}
-                {c.partido ? ` (${c.partido})` : ""}
-              </Text>
+      {candidatos.length > 0 && (
+        <View style={styles.minhaCola}>
+          {candidatos.map((c) => (
+            <View key={c.id} style={styles.item}>
+              {c.sqCandidato ? (
+                <Image source={{ uri: fotoUrl(c.uf, c.sqCandidato) }} style={styles.foto} />
+              ) : (
+                <View style={styles.fotoVazia} />
+              )}
+              <View style={styles.itemInfo}>
+                <Text style={styles.itemCargo}>{capitalizar(c.cargo)}</Text>
+                <Text style={styles.itemNome}>
+                  {c.nome}
+                  {c.partido ? ` (${c.partido})` : ""}
+                </Text>
+              </View>
+              <Text style={styles.itemNumero}>{c.numero}</Text>
+              <TouchableOpacity onPress={() => remover(c.id)} style={styles.remover}>
+                <Text style={styles.removerTexto}>×</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.itemNumero}>{c.numero}</Text>
-            <TouchableOpacity onPress={() => remover(c.id)} style={styles.remover}>
-              <Text style={styles.removerTexto}>×</Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+          ))}
+        </View>
+      )}
 
-        {candidatos.length > 0 && (
-          <View style={styles.acoes}>
-            <TouchableOpacity
-              style={styles.botaoAcao}
-              onPress={imprimir}
-              disabled={enviando !== null}
-            >
-              {enviando === "imprimir" ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.botaoAcaoTexto}>Imprimir</Text>
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.botaoAcao}
-              onPress={compartilhar}
-              disabled={enviando !== null}
-            >
-              {enviando === "compartilhar" ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.botaoAcaoTexto}>Compartilhar</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-      </ScrollView>
+      <View style={styles.acoes}>
+        <TouchableOpacity style={styles.botaoAcao} onPress={imprimir} disabled={enviando !== null}>
+          {enviando === "imprimir" ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.botaoAcaoTexto}>Imprimir</Text>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.botaoAcao} onPress={compartilhar} disabled={enviando !== null}>
+          {enviando === "compartilhar" ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.botaoAcaoTexto}>Compartilhar</Text>
+          )}
+        </TouchableOpacity>
+      </View>
 
-      <View style={[styles.form, { paddingBottom: insets.bottom + 20 }]}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cargos}>
-          {CARGOS.map((c) => (
+      <View style={styles.filtros}>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.cargos}
+          data={CARGOS}
+          keyExtractor={(c) => c}
+          renderItem={({ item: c }) => (
             <TouchableOpacity
-              key={c}
               style={[styles.cargoBotao, cargo === c && styles.cargoBotaoAtivo]}
               onPress={() => {
                 setCargo(c);
-                setTermo("");
+                limparFiltros();
               }}
             >
               <Text style={[styles.cargoTexto, cargo === c && styles.cargoTextoAtivo]}>
                 {capitalizar(c)}
               </Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+          )}
+        />
 
         {cargo !== "PRESIDENTE" && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.cargos}>
-            {UFS.map((u) => (
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.cargos}
+            data={UFS}
+            keyExtractor={(u) => u}
+            renderItem={({ item: u }) => (
               <TouchableOpacity
-                key={u}
                 style={[styles.ufBotao, uf === u && styles.cargoBotaoAtivo]}
                 onPress={() => {
                   setUf(u);
-                  setTermo("");
+                  limparFiltros();
                 }}
               >
-                <Text style={[styles.cargoTexto, uf === u && styles.cargoTextoAtivo]}>
-                  {u}
-                </Text>
+                <Text style={[styles.cargoTexto, uf === u && styles.cargoTextoAtivo]}>{u}</Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
+            )}
+          />
         )}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Buscar candidato oficial por número ou nome"
-          placeholderTextColor="#8a9bb8"
-          value={termo}
-          onChangeText={setTermo}
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.cargos}
+          data={["", ...partidos]}
+          keyExtractor={(p) => p || "todos"}
+          renderItem={({ item: p }) => (
+            <TouchableOpacity
+              style={[styles.ufBotao, filtroPartido === p && styles.cargoBotaoAtivo]}
+              onPress={() => setFiltroPartido(p)}
+            >
+              <Text style={[styles.cargoTexto, filtroPartido === p && styles.cargoTextoAtivo]}>
+                {p || "Todos os partidos"}
+              </Text>
+            </TouchableOpacity>
+          )}
         />
-        {sugestoes.length > 0 && (
-          <View style={styles.sugestoes}>
-            {sugestoes.map((s) => (
-              <TouchableOpacity
-                key={s.sqCandidato}
-                style={styles.sugestao}
-                onPress={() => selecionar(s)}
-              >
-                <Image source={{ uri: fotoUrl(ufAtual, s.sqCandidato) }} style={styles.foto} />
-                <View style={styles.itemInfo}>
-                  <Text style={styles.itemNome}>{capitalizar(s.nomeUrna)}</Text>
-                  <Text style={styles.itemCargo}>{s.partido}</Text>
-                </View>
-                <Text style={styles.itemNumero}>{s.numero}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Nome do candidato"
-          placeholderTextColor="#8a9bb8"
-          value={nome}
-          onChangeText={(t) => {
-            setNome(t);
-            setSqCandidato(undefined);
-          }}
-        />
         <View style={styles.linha}>
           <TextInput
             style={[styles.input, styles.inputNumero]}
             placeholder="Número"
             placeholderTextColor="#8a9bb8"
-            value={numero}
-            onChangeText={(t) => {
-              setNumero(t);
-              setSqCandidato(undefined);
-            }}
+            value={filtroNumero}
+            onChangeText={setFiltroNumero}
             keyboardType="number-pad"
-            maxLength={DIGITOS_POR_CARGO[cargo]}
           />
           <TextInput
             style={[styles.input, styles.inputPartido]}
-            placeholder="Partido (opcional)"
+            placeholder="Nome do candidato"
             placeholderTextColor="#8a9bb8"
-            value={partido}
-            onChangeText={setPartido}
+            value={filtroNome}
+            onChangeText={setFiltroNome}
           />
         </View>
-        <TouchableOpacity style={styles.botaoAdicionar} onPress={adicionar}>
-          <Text style={styles.botaoAdicionarTexto}>Adicionar</Text>
-        </TouchableOpacity>
       </View>
-    </View>
+
+      <FlatList
+        style={styles.resultados}
+        contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+        data={resultados}
+        keyExtractor={(c) => c.sqCandidato}
+        ListEmptyComponent={
+          <Text style={styles.vazio}>Nenhum candidato encontrado com esses filtros.</Text>
+        }
+        renderItem={({ item: c }) => (
+          <TouchableOpacity style={styles.item} onPress={() => adicionar(c)}>
+            <Image source={{ uri: fotoUrl(ufAtual, c.sqCandidato) }} style={styles.foto} />
+            <View style={styles.itemInfo}>
+              <Text style={styles.itemNome}>{capitalizar(c.nomeUrna)}</Text>
+              <Text style={styles.itemCargo}>{c.partido}</Text>
+            </View>
+            <Text style={styles.itemNumero}>{c.numero}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0b1d3a" },
+  container: { flex: 1 },
   titulo: {
     fontSize: 24,
     fontWeight: "700",
@@ -299,8 +296,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginHorizontal: 24,
   },
-  lista: { padding: 16, paddingBottom: 8 },
-  vazio: { color: "#8a9bb8", textAlign: "center", marginTop: 24 },
+  minhaCola: { paddingHorizontal: 16, paddingTop: 16 },
+  vazio: { color: "#8a9bb8", textAlign: "center", marginTop: 24, paddingHorizontal: 16 },
   item: {
     flexDirection: "row",
     alignItems: "center",
@@ -329,7 +326,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   removerTexto: { color: "#fff", fontSize: 18, lineHeight: 18 },
-  acoes: { flexDirection: "row", gap: 10, marginTop: 4 },
+  acoes: { flexDirection: "row", gap: 10, marginTop: 4, paddingHorizontal: 16 },
   botaoAcao: {
     flex: 1,
     backgroundColor: "#132a52",
@@ -338,12 +335,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   botaoAcaoTexto: { color: "#fff", fontWeight: "700", fontSize: 15 },
-  form: {
+  filtros: {
     borderTopWidth: 1,
     borderTopColor: "#1e3560",
-    padding: 16,
-    backgroundColor: "#0e2244",
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    marginTop: 16,
   },
+  resultados: { flex: 1, paddingHorizontal: 16 },
   cargos: { marginBottom: 10 },
   cargoBotao: {
     paddingHorizontal: 12,
@@ -362,20 +361,6 @@ const styles = StyleSheet.create({
   cargoBotaoAtivo: { backgroundColor: "#3467e0" },
   cargoTexto: { color: "#a9b8d4", fontSize: 13 },
   cargoTextoAtivo: { color: "#fff", fontWeight: "700" },
-  sugestoes: {
-    backgroundColor: "#132a52",
-    borderRadius: 10,
-    marginTop: -4,
-    marginBottom: 8,
-    overflow: "hidden",
-  },
-  sugestao: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#0e2244",
-  },
   input: {
     backgroundColor: "#132a52",
     color: "#fff",
@@ -388,12 +373,4 @@ const styles = StyleSheet.create({
   linha: { flexDirection: "row", gap: 8 },
   inputNumero: { flex: 1 },
   inputPartido: { flex: 2 },
-  botaoAdicionar: {
-    backgroundColor: "#3467e0",
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: "center",
-    marginTop: 4,
-  },
-  botaoAdicionarTexto: { color: "#fff", fontWeight: "700", fontSize: 15 },
 });

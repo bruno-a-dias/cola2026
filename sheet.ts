@@ -1,6 +1,6 @@
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
-import { Candidato, capitalizar, fotoUrl } from "./lib";
+import { Candidato, capitalizar, fotoUrl, preencherCargosFaltantes } from "./lib";
 
 // Formato retrato tipo "stories" (Instagram), com fontes grandes para
 // facilitar a leitura de quem tem baixa visão.
@@ -9,22 +9,38 @@ const ALTURA = 1920;
 const GITHUB_USUARIO = "bruno-a-dias";
 
 function linhaHtml(c: Candidato): string {
+  const decidido = c.nome.trim().length > 0;
+
   const foto = c.sqCandidato
     ? `<img src="${fotoUrl(c.uf, c.sqCandidato)}" width="180" height="180" style="border-radius:90px;object-fit:cover;background:#1e3560;flex-shrink:0" />`
-    : `<div style="width:180px;height:180px;border-radius:90px;background:#1e3560;flex-shrink:0"></div>`;
+    : `<div style="width:180px;height:180px;border-radius:90px;border:3px dashed #3a5590;background:#132a52;flex-shrink:0"></div>`;
+
+  const nome = decidido
+    ? `<div style="font-size:46px;font-weight:800;color:#ffffff;line-height:1.15;margin-top:6px">${c.nome}</div>`
+    : `<div style="font-size:32px;font-weight:600;color:#5f75a0;line-height:1.15;margin-top:6px;border-bottom:3px dashed #3a5590;padding-bottom:10px">a preencher</div>`;
+
+  const partido = c.partido
+    ? `<div style="font-size:30px;color:#a9b8d4;margin-top:4px">${c.partido}</div>`
+    : "";
+
+  const numero = decidido
+    ? `<div style="font-size:120px;font-weight:900;color:#ffd75e;line-height:1;flex-shrink:0">${c.numero}</div>`
+    : `<div style="font-size:64px;font-weight:900;color:#3a5590;line-height:1;flex-shrink:0">– – –</div>`;
+
   return `
     <div style="display:flex;align-items:center;gap:32px;flex:1">
       ${foto}
       <div style="flex:1;min-width:0">
         <div style="font-size:30px;font-weight:700;color:#7fa8f7;text-transform:uppercase;letter-spacing:1px">${capitalizar(c.cargo)}</div>
-        <div style="font-size:46px;font-weight:800;color:#ffffff;line-height:1.15;margin-top:6px">${c.nome}</div>
-        ${c.partido ? `<div style="font-size:30px;color:#a9b8d4;margin-top:4px">${c.partido}</div>` : ""}
+        ${nome}
+        ${partido}
       </div>
-      <div style="font-size:120px;font-weight:900;color:#ffd75e;line-height:1;flex-shrink:0">${c.numero}</div>
+      ${numero}
     </div>`;
 }
 
 function montarHtml(candidatos: Candidato[]): string {
+  const linhas = preencherCargosFaltantes(candidatos);
   return `
     <html>
       <head><meta charset="utf-8" /></head>
@@ -36,7 +52,7 @@ function montarHtml(candidatos: Candidato[]): string {
           </div>
 
           <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly;border-top:2px solid #1e3560;border-bottom:2px solid #1e3560;padding:12px 0">
-            ${candidatos.map(linhaHtml).join("")}
+            ${linhas.map(linhaHtml).join("")}
           </div>
 
           <div style="text-align:center;margin-top:24px;font-size:26px;color:#7d8ba8">
