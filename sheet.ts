@@ -16,11 +16,11 @@ function linhaHtml(c: Candidato): string {
     : `<div style="width:180px;height:180px;border-radius:90px;border:3px dashed #3a5590;background:#132a52;flex-shrink:0"></div>`;
 
   const nome = decidido
-    ? `<div style="font-size:46px;font-weight:800;color:#ffffff;line-height:1.15;margin-top:6px">${c.nome}</div>`
+    ? `<div style="font-size:46px;font-weight:800;color:#ffffff;line-height:1.15;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.nome}</div>`
     : `<div style="font-size:32px;font-weight:600;color:#5f75a0;line-height:1.15;margin-top:6px;border-bottom:3px dashed #3a5590;padding-bottom:10px">a preencher</div>`;
 
   const partido = c.partido
-    ? `<div style="font-size:30px;color:#a9b8d4;margin-top:4px">${c.partido}</div>`
+    ? `<div style="font-size:30px;color:#a9b8d4;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.partido}</div>`
     : "";
 
   const numero = decidido
@@ -44,19 +44,19 @@ function montarHtml(candidatos: Candidato[]): string {
   return `
     <html>
       <head><meta charset="utf-8" /></head>
-      <body style="margin:0;padding:0">
-        <div style="width:${LARGURA}px;height:${ALTURA}px;box-sizing:border-box;padding:64px 56px;background:#0b1d3a;font-family:-apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column">
+      <body style="margin:0;padding:0;overflow:hidden">
+        <div style="width:${LARGURA}px;height:${ALTURA}px;box-sizing:border-box;padding:64px 56px;background:#0b1d3a;font-family:-apple-system,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;overflow:hidden">
           <div style="text-align:center;margin-bottom:24px">
             <div style="font-size:56px;font-weight:900;color:#ffffff">Minha Cola 2026</div>
             <div style="font-size:28px;color:#a9b8d4;margin-top:8px">Os números que eu escolhi pra votar</div>
           </div>
 
-          <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly;border-top:2px solid #1e3560;border-bottom:2px solid #1e3560;padding:12px 0">
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly;border-top:2px solid #1e3560;border-bottom:2px solid #1e3560;padding:12px 0;overflow:hidden;min-height:0">
             ${linhas.map(linhaHtml).join("")}
           </div>
 
           <div style="text-align:center;margin-top:24px;font-size:26px;color:#7d8ba8">
-            Desenvolvido por github.com/${GITHUB_USUARIO}
+            Desenvolvido por: <a href="https://github.com/${GITHUB_USUARIO}" style="color:#ffd75e;font-weight:800;text-decoration:none">github.com/${GITHUB_USUARIO}</a>
           </div>
         </div>
       </body>
