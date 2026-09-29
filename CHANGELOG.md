@@ -4,6 +4,15 @@ Versionamento: `MAJOR.MINOR.PATCH`, começando em `1.0.0`. Cada novo APK gerado
 incrementa o PATCH (1.0.0 → 1.0.1 → 1.0.2 ...). A versão vive em `app.json`
 (`expo.version` + `expo.android.versionCode`, que também sobe a cada build).
 
+## 1.0.4 — 2026-09-29
+
+- Novo botão "Ver apuração em tempo real": tela com os resultados oficiais
+  do TSE por cargo/UF/turno (votos, %, situação), direto da divulgação
+  oficial (`resultados.tse.jus.br`), sem projeção — atualiza sozinha a
+  cada 45s
+- Antes do dia da votação (ou se o TSE ainda não publicou aquele
+  cargo/estado), mostra um aviso explicando e um botão pra tentar de novo
+
 ## 1.0.3 — 2026-09-29
 
 - A lista de candidatos (geral ou filtrada) agora sempre aparece em ordem

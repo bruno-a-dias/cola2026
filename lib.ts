@@ -37,6 +37,14 @@ export function capitalizar(texto: string): string {
     .join(" ");
 }
 
+// Separador de milhar sem depender de Intl (Hermes pode não trazer os dados
+// de locale embarcados).
+export function formatarNumero(n: number): string {
+  return Math.round(n)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 // Candidato conforme vem do dataset oficial (consulta_cand_2026 do TSE).
 export type CandidatoTSE = {
   cargo: Cargo;

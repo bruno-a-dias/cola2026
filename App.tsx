@@ -15,6 +15,7 @@ import {
 } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
+import TelaApuracao from "./TelaApuracao";
 import dadosJson from "./assets/candidatos.json";
 import {
   CandidatoTSE,
@@ -37,14 +38,19 @@ const dados = dadosJson as unknown as { geradoEm: string; porUf: Record<string, 
 const FUNDO_PADRAO = ["#0b1d3a", "#0b1d3a"];
 
 export default function App() {
+  const [tela, setTela] = useState<"cola" | "apuracao">("cola");
   return (
     <SafeAreaProvider>
-      <Conteudo />
+      {tela === "apuracao" ? (
+        <TelaApuracao aoVoltar={() => setTela("cola")} />
+      ) : (
+        <Conteudo aoAbrirApuracao={() => setTela("apuracao")} />
+      )}
     </SafeAreaProvider>
   );
 }
 
-function Conteudo() {
+function Conteudo({ aoAbrirApuracao }: { aoAbrirApuracao: () => void }) {
   const insets = useSafeAreaInsets();
   const [candidatos, setCandidatos] = useState<Candidato[]>([]);
   const [cargo, setCargo] = useState<Cargo>("PRESIDENTE");
@@ -135,6 +141,10 @@ function Conteudo() {
         Filtre por partido, número ou nome oficial (dados do TSE) e monte sua
         cola antes de votar.
       </Text>
+
+      <TouchableOpacity style={styles.botaoApuracao} onPress={aoAbrirApuracao}>
+        <Text style={styles.botaoApuracaoTexto}>Ver apuração em tempo real</Text>
+      </TouchableOpacity>
 
       {candidatos.length > 0 && (
         <View style={styles.minhaCola}>
@@ -296,6 +306,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
     marginHorizontal: 24,
   },
+  botaoApuracao: {
+    alignSelf: "center",
+    marginTop: 12,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: "#7a1f2b",
+  },
+  botaoApuracaoTexto: { color: "#fff", fontWeight: "700", fontSize: 13 },
   minhaCola: { paddingHorizontal: 16, paddingTop: 16 },
   vazio: { color: "#8a9bb8", textAlign: "center", marginTop: 24, paddingHorizontal: 16 },
   item: {
